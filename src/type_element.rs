@@ -10,48 +10,13 @@ struct TypeElement<'a> {
     value: Option<&'a str>,
 }
 
+
 impl<'a> PartialEq<TypeElement<'a>> for TypeElement<'a> {
     fn eq<'b>(&self, other: &TypeElement<'b>) -> bool {
-        match self.value {
-            Some(l) => {
-                match other.value {
-                    // check `value`
-                    Some(r) => l.eq(r),
-                    None => false,
-                }
-            },
-            None => {
-                match other.value {
-                    Some(_) => false,
-                    // check `before`, `after`
-                    None => {
-                        match self.before {
-                            Some(b1) => {
-                                match other.before {
-                                    Some(b2) => {
-                                        b1.eq(b2) && match self.after {
-                                            Some(a1) => {
-                                                match other.after {
-                                                    Some(a2) => a1.eq(a2),
-                                                    None => false,
-                                                }
-                                            },
-                                            None => {
-                                                match other.after {
-                                                    Some(_) => false,
-                                                    None => true,
-                                                }
-                                            },
-                                        }
-                                    }
-                                    None => false
-                                }
-                            },
-                            None => false,
-                        }
-                    },
-                }
-            },
+        if self.value.is_some() {
+            self.value == other.value
+        } else {
+            self.before.is_some() && self.before == other.before && self.after == other.after
         }
     }
 }

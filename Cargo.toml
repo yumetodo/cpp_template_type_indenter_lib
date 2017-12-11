@@ -1,0 +1,6 @@
+[package]
+name = "cpp_template_type_indenter_lib"
+version = "0.1.0"
+authors = ["yumetodo <yume-wikijp@live.jp>"]
+
+[dependencies]

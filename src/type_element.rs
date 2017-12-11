@@ -10,49 +10,26 @@ struct TypeElement<'a> {
     value: Option<&'a str>,
 }
 
-impl<'a> PartialEq<TypeElement<'a>> for TypeElement<'a> {
+impl<'a> PartialEq for TypeElement<'a> {
     fn eq<'b>(&self, other: &TypeElement<'b>) -> bool {
-        match self.value {
-            Some(l) => {
-                match other.value {
-                    // check `value`
-                    Some(r) => l.eq(r),
-                    None => false,
-                }
-            },
-            None => {
-                match other.value {
-                    Some(_) => false,
-                    // check `before`, `after`
-                    None => {
-                        match self.before {
-                            Some(b1) => {
-                                match other.before {
-                                    Some(b2) => {
-                                        b1.eq(b2) && match self.after {
-                                            Some(a1) => {
-                                                match other.after {
-                                                    Some(a2) => a1.eq(a2),
-                                                    None => false,
-                                                }
-                                            },
-                                            None => {
-                                                match other.after {
-                                                    Some(_) => false,
-                                                    None => true,
-                                                }
-                                            },
-                                        }
-                                    }
-                                    None => false
-                                }
-                            },
-                            None => false,
-                        }
-                    },
-                }
-            },
-        }
+        match (self.value, other.value) {
+            (Some(l), Some(r)) => return l == r,
+            // pass through
+            (None, None) => (),
+            (_, _) => return false,
+        };
+        // if both of `self` and `other` don't have values,
+        // then compare `before`s and `after`s
+        let before = match (self.before, other.before) {
+            (Some(b1), Some(b2)) => b1 == b2,
+            (_, _) => false,
+        };
+        let after = match (self.after, other.after) {
+            (Some(a1), Some(a2)) => a1 == a2,
+            (None, None) => true,
+            (_, _) => false,
+        };
+        before && after
     }
 }
 
